@@ -159,18 +159,30 @@ jobs:
           set -euo pipefail
           npm run setup
           python3 "$RUNNER_TEMP/mantine-after/guard.py" after-setup
+      - name: Run mandatory full build
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run build all
+          python3 "$RUNNER_TEMP/mantine-after/guard.py" after-build
+      - name: Validate official ESM entry points
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run test:esm-entrypoints
+          python3 "$RUNNER_TEMP/mantine-after/guard.py" after-esm
+      - name: Compile documentation data required by upstream PR workflow
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run compile:llm && npm run compile:mcp
+          python3 "$RUNNER_TEMP/mantine-after/guard.py" after-docs-data
       - name: Run full upstream npm test including typecheck lint and format gates
         shell: bash
         run: |
           set -euo pipefail
           npm test
           python3 "$RUNNER_TEMP/mantine-after/guard.py" after-npm-test
-      - name: Run mandatory full build
-        shell: bash
-        run: |
-          set -euo pipefail
-          npm run build
-          python3 "$RUNNER_TEMP/mantine-after/guard.py" after-build
       - name: Record Codex CLI review availability and enforce follow-through
         shell: bash
         run: |
