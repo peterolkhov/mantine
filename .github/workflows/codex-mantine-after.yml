@@ -1,0 +1,207 @@
+name: Mantine nonadjacent row errors native verification
+on:
+  workflow_dispatch:
+  push:
+    branches: [codex/verify-mantine-reorder-errors]
+permissions:
+  contents: read
+jobs:
+  native-after:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: mantinedev/mantine
+          ref: aa34f59c9af82948d0ad6a012671bf974255715b
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version: '26.3.0'
+      - name: Freeze pinned whole-source baseline and identical diagnostic fixture
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'ASSETS'
+          import base64,json,os,pathlib,zlib
+          packet=pathlib.Path(os.environ['RUNNER_TEMP'])/'mantine-after'
+          packet.mkdir()
+          assets=json.loads(zlib.decompress(base64.b64decode('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')))
+          for name,value in assets.items():
+              target=packet/name
+              target.parent.mkdir(parents=True,exist_ok=True)
+              target.write_text(value)
+          print('MANTINE_AFTER_WORKFLOW_COMMIT '+os.environ['GITHUB_SHA'])
+          ASSETS
+          python3 "$RUNNER_TEMP/mantine-after/guard.py" capture
+      - name: Install immutable upstream dependencies
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm exec --yes --package=@yarnpkg/cli-dist@4.18.1 -- yarn install --immutable
+          python3 "$RUNNER_TEMP/mantine-after/guard.py" before-after-install
+      - name: Require the same fourteen-case red baseline
+        shell: bash
+        run: |
+          set -euo pipefail
+          packet="$RUNNER_TEMP/mantine-after"
+          set +e
+          npm run jest -- --runInBand --verbose --runTestsByPath packages/@mantine/form/src/tests/use-form/reorder-record-errors.test.tsx --json --outputFile="$packet/frozen-before.json" > "$packet/frozen-before.log" 2>&1
+          status=$?
+          set -e
+          printf '%s\n' "$status" > "$packet/frozen-before.status"
+          cat "$packet/frozen-before.log"
+          printf 'MANTINE_RAW_JSON_BEGIN frozen-before\n'
+          cat "$packet/frozen-before.json"
+          printf '\nMANTINE_RAW_JSON_END frozen-before\n'
+
+          python3 "$packet/guard.py" before-after-native
+          python3 "$packet/assess.py" frozen-before
+      - name: Apply only the declared three-file source patch
+        shell: bash
+        run: |
+          set -euo pipefail
+          packet="$RUNNER_TEMP/mantine-after"
+          git apply --check "$packet/change.patch"
+          git apply "$packet/change.patch"
+          python3 "$packet/guard.py" patched
+      - name: Prove permanent regressions fail without the production correction
+        shell: bash
+        run: |
+          set -euo pipefail
+          packet="$RUNNER_TEMP/mantine-after"
+          implementation=packages/@mantine/form/src/lists/reorder-errors.ts
+          git show "HEAD:$implementation" > "$implementation"
+          python3 "$packet/guard.py" regression-red
+
+          set -euo pipefail
+          packet="$RUNNER_TEMP/mantine-after"
+          set +e
+          npm run jest -- --runInBand --verbose --runTestsByPath packages/@mantine/form/src/lists/reorder-errors.test.ts packages/@mantine/form/src/tests/use-form/reorderListItem.test.ts --json --outputFile="$packet/permanent-red.json" > "$packet/permanent-red.log" 2>&1
+          status=$?
+          set -e
+          printf '%s\n' "$status" > "$packet/permanent-red.status"
+          cat "$packet/permanent-red.log"
+          printf 'MANTINE_RAW_JSON_BEGIN permanent-red\n'
+          cat "$packet/permanent-red.json"
+          printf '\nMANTINE_RAW_JSON_END permanent-red\n'
+
+          python3 "$packet/guard.py" regression-red
+          cp "$packet/source-files/packages/@mantine/form/src/lists/reorder-errors.ts" packages/@mantine/form/src/lists/reorder-errors.ts
+          python3 "$packet/guard.py" patched
+          python3 "$packet/assess.py" permanent-red
+      - name: Require all fourteen unchanged public-hook cases green
+        shell: bash
+        run: |
+          set -euo pipefail
+          packet="$RUNNER_TEMP/mantine-after"
+          set +e
+          npm run jest -- --runInBand --verbose --runTestsByPath packages/@mantine/form/src/tests/use-form/reorder-record-errors.test.tsx --json --outputFile="$packet/frozen-after.json" > "$packet/frozen-after.log" 2>&1
+          status=$?
+          set -e
+          printf '%s\n' "$status" > "$packet/frozen-after.status"
+          cat "$packet/frozen-after.log"
+          printf 'MANTINE_RAW_JSON_BEGIN frozen-after\n'
+          cat "$packet/frozen-after.json"
+          printf '\nMANTINE_RAW_JSON_END frozen-after\n'
+
+          python3 "$packet/guard.py" after-frozen
+          python3 "$packet/assess.py" frozen-after
+      - name: Retire the unchanged diagnostic fixture before repository-wide format checks
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 "$RUNNER_TEMP/mantine-after/guard.py" retire-fixture
+      - name: Require changed permanent helper and public-hook suites green
+        shell: bash
+        run: |
+          set -euo pipefail
+          packet="$RUNNER_TEMP/mantine-after"
+          set +e
+          npm run jest -- --runInBand --verbose --runTestsByPath packages/@mantine/form/src/lists/reorder-errors.test.ts packages/@mantine/form/src/tests/use-form/reorderListItem.test.ts --json --outputFile="$packet/permanent-after.json" > "$packet/permanent-after.log" 2>&1
+          status=$?
+          set -e
+          printf '%s\n' "$status" > "$packet/permanent-after.status"
+          cat "$packet/permanent-after.log"
+          printf 'MANTINE_RAW_JSON_BEGIN permanent-after\n'
+          cat "$packet/permanent-after.json"
+          printf '\nMANTINE_RAW_JSON_END permanent-after\n'
+
+          python3 "$packet/guard.py" after-permanent
+          python3 "$packet/assess.py" permanent-after
+      - name: Require the complete form package suite green
+        shell: bash
+        run: |
+          set -euo pipefail
+          packet="$RUNNER_TEMP/mantine-after"
+          set +e
+          npm run jest -- --runInBand --verbose @mantine/form --json --outputFile="$packet/full-form.json" > "$packet/full-form.log" 2>&1
+          status=$?
+          set -e
+          printf '%s\n' "$status" > "$packet/full-form.status"
+          cat "$packet/full-form.log"
+          printf 'MANTINE_RAW_JSON_BEGIN full-form\n'
+          cat "$packet/full-form.json"
+          printf '\nMANTINE_RAW_JSON_END full-form\n'
+
+          python3 "$packet/guard.py" after-full-form
+          python3 "$packet/assess.py" full-form
+      - name: Run mandatory lint and formatter on every changed file
+        shell: bash
+        run: |
+          set -euo pipefail
+          npx --no-install oxlint -c oxlint.config.mjs packages/@mantine/form/src/lists/reorder-errors.test.ts packages/@mantine/form/src/lists/reorder-errors.ts packages/@mantine/form/src/tests/use-form/reorderListItem.test.ts
+          npm run format:write:files -- packages/@mantine/form/src/lists/reorder-errors.test.ts packages/@mantine/form/src/lists/reorder-errors.ts packages/@mantine/form/src/tests/use-form/reorderListItem.test.ts
+          python3 "$RUNNER_TEMP/mantine-after/guard.py" after-format-lint
+      - name: Run documented project setup
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run setup
+          python3 "$RUNNER_TEMP/mantine-after/guard.py" after-setup
+      - name: Run full upstream npm test including typecheck lint and format gates
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm test
+          python3 "$RUNNER_TEMP/mantine-after/guard.py" after-npm-test
+      - name: Run mandatory full build
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm run build
+          python3 "$RUNNER_TEMP/mantine-after/guard.py" after-build
+      - name: Record Codex CLI review availability and enforce follow-through
+        shell: bash
+        run: |
+          set -euo pipefail
+          if command -v codex; then
+            printf 'MANTINE_CODEX_REVIEW_AVAILABLE_PENDING: upstream requires /codex-code-review; root must run it and apply findings before publication.
+          '
+            exit 2
+          else
+            printf 'MANTINE_CODEX_REVIEW_UNAVAILABLE: command -v codex found no installed CLI; no review was claimed or tool installed.
+          '
+          fi
+          python3 "$RUNNER_TEMP/mantine-after/guard.py" final
+      - name: Always report final tracked source index and tree state
+        if: always()
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 "$RUNNER_TEMP/mantine-after/guard.py" final
+      - name: Preserve changed canonical source text if formatter or setup altered it
+        if: always()
+        shell: bash
+        run: |
+          python3 - <<'PYCANON'
+          import os,pathlib,json,hashlib
+          packet=pathlib.Path(os.environ['RUNNER_TEMP'])/'mantine-after'
+          m=json.loads((packet/'publisher-manifest.json').read_text())
+          for f in m['files']:
+              p=pathlib.Path(f['path'])
+              if p.is_file():
+                  b=p.read_bytes();h=hashlib.sha256(b).hexdigest()
+                  if h!=f['after_sha256']:
+                      print('MANTINE_CHANGED_CANONICAL_SOURCE '+json.dumps({'path':f['path'],'sha256':h,'text':b.decode()}),flush=True)
+          PYCANON
