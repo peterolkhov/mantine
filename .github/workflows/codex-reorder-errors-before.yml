@@ -1,0 +1,59 @@
+name: Mantine finite public-hook before
+on:
+  workflow_dispatch:
+  push:
+    branches: [codex/diagnose-reorder-errors]
+permissions:
+  contents: read
+jobs:
+  before:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1
+        with:
+          repository: mantinedev/mantine
+          ref: aa34f59c9af82948d0ad6a012671bf974255715b
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1
+        with:
+          node-version: '26.3.0'
+      - name: Freeze immutable fixture and all tracked upstream source
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 - <<'PYASSETS'
+          import os,pathlib,base64,zlib,json
+          a=pathlib.Path(os.environ['RUNNER_TEMP'])/'mantine-before';a.mkdir()
+          assets=json.loads(zlib.decompress(base64.b64decode('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')))
+          for name,value in assets.items():(a/name).write_text(value)
+          print('MANTINE_WORKFLOW_COMMIT '+os.environ['GITHUB_SHA'])
+          PYASSETS
+          python3 "$RUNNER_TEMP/mantine-before/guard.py" capture
+      - name: Install unchanged upstream dependency graph
+        shell: bash
+        run: |
+          set -euo pipefail
+          npm exec --yes --package=@yarnpkg/cli-dist@4.18.1 -- yarn install --immutable
+          python3 "$RUNNER_TEMP/mantine-before/guard.py" after-install
+      - name: Capture actual fourteen-case native output before assessment
+        shell: bash
+        run: |
+          set -euo pipefail
+          set +e
+          npm run jest -- --runInBand --runTestsByPath packages/@mantine/form/src/tests/use-form/reorder-record-errors.test.tsx --json --outputFile="$RUNNER_TEMP/mantine-before/result.json" > "$RUNNER_TEMP/mantine-before/test.log" 2>&1
+          status=$?
+          set -e
+          echo "$status" > "$RUNNER_TEMP/mantine-before/status"
+          cat "$RUNNER_TEMP/mantine-before/test.log"
+          echo MANTINE_RAW_JSON_BEGIN
+          cat "$RUNNER_TEMP/mantine-before/result.json"
+          echo
+          echo MANTINE_RAW_JSON_END
+          python3 "$RUNNER_TEMP/mantine-before/guard.py" after-native
+      - name: Require finite attempted cases and genuine passing controls
+        shell: bash
+        run: |
+          set -euo pipefail
+          python3 "$RUNNER_TEMP/mantine-before/assess.py"
+          python3 "$RUNNER_TEMP/mantine-before/guard.py" final
